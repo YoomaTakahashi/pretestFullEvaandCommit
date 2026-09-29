@@ -11,25 +11,25 @@
                         <v-form @submit.prevent="saveMember">
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined" label="ชื่อ" v-model="form.fname" :error-messages="error.fname" prepend-inner-icon="mdi-alpha-f"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable  label="ชื่อ" v-model="form.fname" :error-messages="error.fname" prepend-inner-icon="mdi-alpha-f"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined" label="นามสกุล" v-model="form.lname" :error-messages="error.lname" prepend-inner-icon="mdi-alpha-l"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable  label="นามสกุล" v-model="form.lname" :error-messages="error.lname" prepend-inner-icon="mdi-alpha-l"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined" label="อีเมล" v-model="form.email" :error-messages="error.email" prepend-inner-icon="mdi-email"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable  label="อีเมล" v-model="form.email" :error-messages="error.email" prepend-inner-icon="mdi-email"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined" label="ชื่อผู้ใช้" v-model="form.username" :error-messages="error.username" prepend-inner-icon="mdi-account"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable  label="ชื่อผู้ใช้" v-model="form.username" :error-messages="error.username" prepend-inner-icon="mdi-account"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined" label="รหัสผ่าน" v-model="form.password" :error-messages="error.password" :prepend-inner-icon="show ? 'mdi-eye':'mdi-eye-off'" :type="showPw ? 'text':'password'" @click:prepend-inner="show = !show , showPw = !showPw"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable  label="รหัสผ่าน" v-model="form.password" :error-messages="error.password" :prepend-inner-icon="show ? 'mdi-eye':'mdi-eye-off'" :type="showPw ? 'text':'password'" @click:prepend-inner="show = !show , showPw = !showPw"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-text-field variant="outlined"  label="ยืนยันรหัสผ่าน" v-model="conP" :error-messages="error.conP" :prepend-inner-icon="show2 ? 'mdi-eye':'mdi-eye-off'" :type="showPw2 ? 'text':'password'" @click:prepend-inner="show2 = !show2 , showPw2 = !showPw2"></v-text-field>
+                                    <v-text-field variant="solo-filled" clearable   label="ยืนยันรหัสผ่าน" v-model="conP" :error-messages="error.conP" :prepend-inner-icon="show2 ? 'mdi-eye':'mdi-eye-off'" :type="showPw2 ? 'text':'password'" @click:prepend-inner="show2 = !show2 , showPw2 = !showPw2"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="12">
-                                    <v-alert icon="mdi-account" variant="outlined">{{ form.role }}</v-alert>
+                                    <v-alert icon="mdi-account" variant="tonal">{{ form.role }}</v-alert>
                                 </v-col>
                                 
                             </v-row>
