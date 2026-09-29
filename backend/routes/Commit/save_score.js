@@ -19,24 +19,24 @@ router.get('/user/:id_eva',verifyToken,requireRole('กรรมการปร�
 })
 
 router.get('/topic/:id_eva',verifyToken,requireRole('กรรมการประเมิน'),async (req,res) => {
-    try{
-        const id_member = req.user.id_member
-        const id_eva = req.params.id_eva
+    try {
+        const id_member =req.user.id_member
+        const id_eva=req.params.id_eva
         const [topics] = await db.query(`select * from tb_topic`)
-        const [indicates] = await db.query(`select * from tb_indicate i,tb_evadetail d where i.id_indicate=d.id_indicate and status_eva in (1) and id_eva=?`,[id_eva])
+        const [indicates] = await db.query(`select * from tb_indicate i, tb_evadetail d  where i.id_indicate=d.id_indicate and status_eva in (1) and id_eva=?`,[id_eva])
         const result = topics.map(t =>({
             ...t,
             indicates:indicates.filter((i) => i.id_topic === t.id_topic)
         }))
         res.json(result)
-    }catch(err){
-        console.error("Error GET TOPIC",err)
-        res.status(500).json({message:'Error GET TOPIC'})
+    } catch (error) {
+        console.error('ERROR GET TOPICS',error)
+        res.status(500).json({message:'ERROR GET TOPICS'})
     }
 })
 
 
-router.post('/save/:id_eva',verifyToken,requireRole('ผู้รับการประเมินผล'),async (req,res) => {
+router.post('/save/:id_eva',verifyToken,requireRole('กรรมการประเมิน'),async (req,res) => {
     try {
         const id_member = req.user.id_member
         const id_eva = req.params.id_eva
@@ -54,7 +54,7 @@ router.post('/save/:id_eva',verifyToken,requireRole('ผู้รับการ
         for(const item of scores){
             await db.query(
                 `insert into tb_evadetail (id_eva,id_indicate,status_eva,score_commit) values(?,?,?,?)`,
-                [id_eva,item.id_indicate,statusCommit,item.score]
+                [id_eva,item.id_indicate,status_commit,item.score]
             )
         }
         const [[sumRow]] = await db.query(
