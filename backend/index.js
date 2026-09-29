@@ -21,10 +21,26 @@ app.use('/api/profile',pf)
 const auth = require('./routes/auth')
 app.use('/api/auth',auth)
 
+const doc = require('./routes/docnoe')
+app.use('/api/docnoe',doc)
+
+const dash = require('./routes/dash')
+app.use('/api/dash',dash)
+
 //eva
 
 const self = require('./routes/Eva/selfeva')
 app.use('/api/Eva/selfeva',self)
+
+const score_m = require('./routes/Eva/score_member')
+app.use('/api/Eva/score_member',score_m)
+
+const score_c = require('./routes/Eva/score_commit')
+app.use('/api/Eva/score_commit',score_c)
+
+
+const edit_eva = require('./routes/Eva/edit_eva')
+app.use('/api/Eva/edit_eva',edit_eva)
 
 app.use((req,res)=>res.status(404).json({message:'Route not Found'}))
 app.listen(3001,()=>{
