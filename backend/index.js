@@ -41,6 +41,10 @@ const score_commit2 = require('./routes/Commit/score_commit')
 app.use('/api/Commit/score_commit',score_commit2)
 
 
+const signature = require('./routes/Commit/signature')
+app.use('/api/Commit/signature',signature)
+
+
 
 app.use((req,res)=>res.status(404).json({message:'Route not Found'}))
 app.listen(3001,()=>{

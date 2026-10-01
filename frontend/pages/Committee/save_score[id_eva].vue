@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols="12">
-                <v-alert typo="info" v-if="user.status_eva === 1">ผู้รับการประเมินยังไม่ได้ประเมินตนเอง</v-alert>
+                <v-alert v-if="user.status_eva === 1">ผู้รับการประเมินยังไม่ได้ประเมินตนเอง</v-alert>
                 <v-form v-else-if="user.status_commit === 'n'" @submit.prevent="saveScore">
                     <h1 class="text-h5 font-weight-bold">แบบประเมินตนเอง</h1>
                     <v-card class="mt-3 pa-3" :elevation="5" >
@@ -11,16 +11,15 @@
                     </v-card>
                     <v-row v-for="(topic,t) in topics" :key="topic.id_topic">
                         <v-col cols="12">
-                            <h1 class="text-h6">{{ t+1 }}.{{ topic.name_topic }}</h1>
                             <v-card class="pa-3 mt-1" :elevation="5" rounded="5">
                                 <v-row v-for="(indicate,i) in topic.indicates" :key="indicate.id_indicate">
                                     <v-col cols="12">
                                         {{ t+1 }}.{{ i+1 }} {{ indicate.name_indicate }} รายละเอียดตัวชี้วัด {{ indicate.detail_indicate }} น้ำหนักคะแนน {{ indicate.point_indicate }} คะแนนเต็ม {{ indicate.point_indicate*4 }}
-                                        <p class="mt-2">รายละเอียด : {{ indicate.detail_indicate || '-' }}</p>
-                                        <p class="mt-2">file : <v-btn v-if="indicate.detail_eva" size="smail" @click="viweFile(indicate.file_eva)" color="blue">เปิดดู </v-btn><span v-else>-</span></p>
-                                        <v-select v-if="indicate.check_indicate === 'y'" class="mt-2" label="ใส่คะแนนประเมิน 1-4" :items="[1,2,3,4]" v-model="indicate.score"></v-select>
+                                        <p class="mt-2" >รายละเอียด: {{indicate.detail_indicate || '-'}}</p>
+                                        <p class="mt-2">file : <v-btn v-if="indicate.file_eva" size="smail" color="blue" @click="viweFile(indicate.file_eva) ">เปิดดู</v-btn><span v-else>ไม่มีไฟล์</span></p>
+                                        <v-select v-if="indicate.check_indicate === 'y'" label="ใส่คะแนนประเมิน 1-4 " :items="[1,2,3,4]" v-model="indicate.score" variant="outlined"></v-select>
                                         <v-text-field v-else-if="indicate.check_indicate === 'n'" label="ใส่คะแนนประเมิน 1-4 " v-model="indicate.score" variant="outlined" @input="indicate.score > 4 ? indicate.score = 4 :null " min="0"></v-text-field>
-                                        </v-col>
+                                    </v-col>
                                 </v-row>
                             </v-card>
                         </v-col>
@@ -28,25 +27,26 @@
                     <div class="mt-4">
                         <v-card class="pa-2">
                             <label for="">ข้อเสนอแนะ</label>
+                             <v-textarea label="(ถ้ามี)" v-model="detail_commit" rows="2"></v-textarea>
                         </v-card>
                     </div>
                     <div class="text-center mt-4">
                         <v-btn type="submit" color="blue">บันทึกคะแนน</v-btn>
                     </div>
                 </v-form>
-                <v-alert type="success" variant="tonal" v-else-if="user.status_commit === 'y'">ประเมินสำเร็จ</v-alert>
-                <v-alert type="error" variant="tonal" v-else>ยังไม่ได้ประเมิน</v-alert>
+                <v-alert type="success" variant="outlined" v-else-if="user.status_eva === 2 || user.status_eva === 3">ประเมินสำเร็จ</v-alert>
+                <v-alert type="error" variant="outlined" v-else>ยังไม่ได้ประเมิน</v-alert>
             </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
-import {commit} from '../../API/base'
+import axios from 'axios';
+import {commit} from '../../API/base';
 
-const user = ref<any>({})
 const topics = ref<any>([])
+const user = ref<any>({})
 const detail_commit = ref('')
 const id_eva = useRoute().params.id_eva
 
@@ -55,59 +55,62 @@ const viweFile = (filename:string) =>{
     window.open(url,'_blank')
 }
 
-const fetchUser = async () =>{
+const fetchUser = async()=>{
     const token = localStorage.getItem('token')
-    try{
+    try {
         const res = await axios.get(`${commit}/save_score/user/${id_eva}`,{headers:{Authorization:`Bearer ${token}`}})
         user.value = res.data
-    }catch(err){
-        console.error('Error Get Profile!',err)
+    } catch (error) {
+        console.error('ERROR GET USER  ',error)
     }
 }
-const fetchTopics = async () =>{
+const fetchTopics = async()=>{
     const token = localStorage.getItem('token')
-    try{
+    try {
         const res = await axios.get(`${commit}/save_score/topic/${id_eva}`,{headers:{Authorization:`Bearer ${token}`}})
         topics.value = res.data
-    }catch(err){
-        console.error('Error Get Profile!',err)
+    } catch (error) {
+        console.error('ERROR GET TOPICS  ',error)
     }
 }
-onMounted(async () =>{
-    await Promise.all([fetchUser(),fetchTopics()])
+
+onMounted(async()=>{
+    Promise.all([fetchUser(),fetchTopics()])
 })
 
-const saveScore = async () =>{
+const saveScore = async()=>{
     const token = localStorage.getItem('token')
     const formData = new FormData()
     const allScore = topics.value.flatMap((t:any) =>
-        t.indicates.map((i:any) =>{
+        t.indicates.map((i:any) => {
             return{
                 id_topic:t.id_topic,
                 id_indicate:i.id_indicate,
                 score:i.score,
+        
             }
         })
     )
-    if(allScore.some((s:any) => !s.score)){
+    if(allScore.some((s:any)=> !s.score)){
         alert('กรุณากรอกคะแนนให้สมบูรณ์')
         return
     }
     formData.append('scores',JSON.stringify(allScore))
     const detail_commitTo = ref('')
-    if(detail_commit.value && detail_commit.value.trim()){
+    if(detail_commit.value = detail_commit.value.trim()){
         detail_commitTo.value = detail_commit.value
     }else{
         detail_commitTo.value = 'ไม่มี'
     }
     formData.append('detail_commit',detail_commitTo.value)
-    try{
+    try {
         await axios.post(`${commit}/save_score/save/${id_eva}`,formData,{headers:{Authorization:`Bearer ${token}`}})
         alert('ประเมินสำเร็จ')
-        await Promise.all([fetchUser(),fetchTopics()])
-        navigateTo('/Committee/Check_confirm',{replace:true})
-    }catch(err){
-        console.error('Error POST Score!',err)
+        await Promise.all([fetchTopics(),fetchUser()])
+        // window.location.reload()
+        navigateTo('/Commitee/check_confirm',{replace:true})
+    } catch (error) {
+        console.error('Error POST Score!',error)
     }
 }
 </script>
